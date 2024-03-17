@@ -11,6 +11,8 @@ class Track(BaseModel):
     name: str
     image_url: str = Field(validation_alias="image")
     audio_file_url: str = Field(validation_alias="signed_url")
+    access: str
+    category: str
 
     @computed_field
     @property
