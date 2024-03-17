@@ -11,6 +11,7 @@ class Track(BaseModel):
     name: str
     image_url: str = Field(validation_alias="image")
     audio_file_url: str = Field(validation_alias="signed_url")
+    sample_url: str = Field(validation_alias="sample")
     access: str
     category: str
 
@@ -24,6 +25,19 @@ class Track(BaseModel):
     def audio_file_name(self) -> str:
         url = self.audio_file_url.split("?")[0]
         return url.split("/")[-1]
+
+    @computed_field
+    @property
+    def sample_file_name(self) -> str:
+        return self.sample_url.split("/")[-1]
+
+    def download_sample(self):
+        response = requests.get(self.sample_url)
+        os.makedirs(settings.samples_directory, exist_ok=True)
+        with open(
+            os.path.join(settings.samples_directory, self.sample_file_name), "wb"
+        ) as file:
+            file.write(response.content)
 
     def download_audio(self):
         response = requests.get(self.audio_file_url)

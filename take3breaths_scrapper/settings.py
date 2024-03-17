@@ -3,8 +3,9 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    images_directory: str = "images"
-    audio_directory: str = "audio"
+    images_directory: str = "assets/images"
+    audio_directory: str = "assets/audio"
+    samples_directory: str = "assets/samples"
 
 
 @lru_cache
