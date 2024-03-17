@@ -15,3 +15,4 @@ json = response.json()
 tracks = list(map(Track.model_validate, json))
 for track in tracks:
     track.download_image()
+    track.download_audio()
