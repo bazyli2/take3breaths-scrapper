@@ -1,5 +1,5 @@
-from typing import Annotated
-from pydantic import BaseModel, Field, computed_field
+from typing import Annotated, Any
+from pydantic import AfterValidator, BaseModel, Field, computed_field
 import requests
 import os
 
@@ -13,7 +13,7 @@ class Track(BaseModel):
     image_url: Annotated[str, Field(validation_alias="image", exclude=True)]
     audio_file_url: Annotated[str, Field(validation_alias="signed_url", exclude=True)]
     sample_url: Annotated[str, Field(validation_alias="sample", exclude=True)]
-    description: str
+    description: Annotated[str, AfterValidator(lambda v: v.replace("\n", "").strip())]
     access: str
     category: str
 
