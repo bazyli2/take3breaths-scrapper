@@ -1,6 +1,7 @@
 import requests
 
 from take3breaths_scrapper.schema import Track
+from take3breaths_scrapper.utils import save_objects_to_csv
 
 response = requests.post(
     "https://api.dev.mindses.com/v1/login/",
@@ -17,3 +18,5 @@ for track in tracks:
     track.download_image()
     track.download_audio()
     track.download_sample()
+
+save_objects_to_csv(tracks, "tracks.csv")
