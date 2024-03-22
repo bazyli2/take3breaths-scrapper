@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 *.csv
+*.sql
 assets
 __pycache__/
 *.py[cod]

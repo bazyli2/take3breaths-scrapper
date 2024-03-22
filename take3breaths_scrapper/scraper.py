@@ -1,11 +1,13 @@
 import requests
 
 from take3breaths_scrapper.schema import Track
-from take3breaths_scrapper.utils import save_objects_to_csv
+from take3breaths_scrapper.utils import (
+    save_insert_statements_to_file,
+)
 
 response = requests.post(
     "https://api.dev.mindses.com/v1/login/",
-    data={"email": "testowaosoba122+51@gmail.com", "password": "jeremi420"},
+    data={"email": "lifaleca@jollyfree.com", "password": "jeremi421"},
 )
 json = response.json()
 response = requests.get(
@@ -19,4 +21,4 @@ for track in tracks:
     track.download_audio()
     track.download_sample()
 
-save_objects_to_csv(tracks, "tracks.csv")
+save_insert_statements_to_file(tracks, "tracks.sql")

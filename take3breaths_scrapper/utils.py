@@ -1,6 +1,8 @@
 import csv
 from pydantic import BaseModel
 
+from take3breaths_scrapper.schema import Track
+
 
 def save_objects_to_csv[T: BaseModel](objects: list[T], file_path: str):
     if not objects:
@@ -12,3 +14,9 @@ def save_objects_to_csv[T: BaseModel](objects: list[T], file_path: str):
         writer.writeheader()
         for object in objects:
             writer.writerow(object.model_dump())
+
+
+def save_insert_statements_to_file(objects: list[Track], file_path: str):
+    with open(file_path, "w") as file:
+        for obj in objects:
+            file.write(obj.generate_insert_statement("tracks") + "\n")

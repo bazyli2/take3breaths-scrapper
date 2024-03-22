@@ -8,30 +8,49 @@ from take3breaths_scrapper.settings import get_settings
 settings = get_settings()
 
 
+def description_validator(description: str):
+    value = description.replace("\n", "").strip().replace("'", "''")
+    return "NULL" if value == "" else f"'{value}'"
+
+
 class Track(BaseModel):
-    name: str
+    name: Annotated[str, AfterValidator(lambda v: f"'{v}'")]
     image_url: Annotated[str, Field(validation_alias="image", exclude=True)]
     audio_file_url: Annotated[str, Field(validation_alias="signed_url", exclude=True)]
     sample_url: Annotated[str, Field(validation_alias="sample", exclude=True)]
-    description: Annotated[str, AfterValidator(lambda v: v.replace("\n", "").strip())]
-    access: str
-    category: str
+    description: Annotated[str, AfterValidator(description_validator)]
+    access: Annotated[str, Field(exclude=True)]
+    category: Annotated[str, Field(exclude=True)]
 
     @computed_field
     @property
     def image_file_name(self) -> str:
-        return self.image_url.split("/")[-1]
+        value = self.image_url.split("/")[-1]
+        return f"'{value}'"
 
     @computed_field
     @property
     def audio_file_name(self) -> str:
         url = self.audio_file_url.split("?")[0]
-        return url.split("/")[-1]
+        value = url.split("/")[-1]
+        return f"'{value}'"
 
     @computed_field
     @property
     def sample_file_name(self) -> str:
-        return self.sample_url.split("/")[-1]
+        value = self.sample_url.split("/")[-1]
+        return f"'{value}'"
+
+    @computed_field
+    @property
+    def access_id(self) -> str:
+        if self.access == "p":
+            return "'premium'"
+        if self.access == "a":
+            return "'all'"
+        if self.access == "r":
+            return "'regular'"
+        return "'all'"
 
     def download_sample(self):
         response = requests.get(self.sample_url)
@@ -56,3 +75,12 @@ class Track(BaseModel):
             os.path.join(settings.images_directory, self.image_file_name), "wb"
         ) as file:
             file.write(response.content)
+
+    def generate_insert_statement(self, table_name: str):
+        fieldnames = list(
+            self.model_json_schema(mode="serialization")["properties"].keys()
+        )
+        fields = ", ".join(fieldnames)
+        values = ", ".join(map(str, self.model_dump().values()))
+        stmt = f"INSERT INTO {table_name} ({fields}) VALUES ({values});"
+        return stmt
