@@ -43,12 +43,3 @@ class Track(BaseModel):
             os.path.join(settings.images_directory, self.image_file_name), "wb"
         ) as file:
             file.write(response.content)
-
-    def generate_insert_statement(self, table_name: str):
-        fieldnames = list(
-            self.model_json_schema(mode="serialization")["properties"].keys()
-        )
-        fields = ", ".join(fieldnames)
-        values = ", ".join(map(str, self.model_dump().values()))
-        stmt = f"INSERT INTO {table_name} ({fields}) VALUES ({values});"
-        return stmt

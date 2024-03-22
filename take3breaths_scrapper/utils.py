@@ -19,4 +19,14 @@ def save_objects_to_csv[T: BaseModel](objects: list[T], file_path: str):
 def save_insert_statements_to_file(objects: list[Track], file_path: str):
     with open(file_path, "w") as file:
         for obj in objects:
-            file.write(obj.generate_insert_statement("tracks") + "\n")
+            file.write(generate_insert_statement(obj, "tracks") + "\n")
+
+
+def generate_insert_statement(object: BaseModel, table_name: str):
+    fieldnames = list(
+        object.model_json_schema(mode="serialization")["properties"].keys()
+    )
+    fields = ", ".join(fieldnames)
+    values = ", ".join(map(str, object.model_dump().values()))
+    stmt = f"INSERT INTO {table_name} ({fields}) VALUES ({values});"
+    return stmt
