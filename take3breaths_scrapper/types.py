@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import AfterValidator
 
@@ -23,7 +23,6 @@ Description = Annotated[
     AfterValidator(replace_single_quotes),
     AfterValidator(wrap_in_quotes),
 ]
-AccessPrefix = Literal["a", "r", "p"]
 
 
 AccessId = Annotated[

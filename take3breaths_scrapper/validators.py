@@ -1,4 +1,4 @@
-from take3breaths_scrapper.types import AccessPrefix
+from typing import Literal
 
 
 def replace_empty_with_none(v: str):
@@ -25,7 +25,7 @@ def remove_query_string(v: str):
     return v.split("?")[0]
 
 
-def access_prefix_to_id(prefix: AccessPrefix):
+def access_prefix_to_id(prefix: Literal["a", "r", "p"]):
     if prefix == "a":
         return "all"
     if prefix == "r":
