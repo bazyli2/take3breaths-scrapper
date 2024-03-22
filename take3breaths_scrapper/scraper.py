@@ -16,9 +16,9 @@ response = requests.get(
 )
 json = response.json()
 tracks = list(map(Track.model_validate, json))
-for track in tracks:
-    track.download_image()
-    track.download_audio()
-    track.download_sample()
+# for track in tracks:
+#     track.download_image()
+#     track.download_audio()
+#     track.download_sample()
 
 save_insert_statements_to_file(tracks, "tracks.sql")

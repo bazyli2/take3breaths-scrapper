@@ -1,56 +1,24 @@
-from typing import Annotated, Any
-from pydantic import AfterValidator, BaseModel, Field, computed_field
+from typing import Annotated
+from pydantic import BaseModel, Field
 import requests
 import os
 
 from take3breaths_scrapper.settings import get_settings
+from take3breaths_scrapper.types import AccessId, Description, FileName, Name
 
 settings = get_settings()
 
 
-def description_validator(description: str):
-    value = description.replace("\n", "").strip().replace("'", "''")
-    return "NULL" if value == "" else f"'{value}'"
-
-
 class Track(BaseModel):
-    name: Annotated[str, AfterValidator(lambda v: f"'{v}'")]
+    name: Name
     image_url: Annotated[str, Field(validation_alias="image", exclude=True)]
     audio_file_url: Annotated[str, Field(validation_alias="signed_url", exclude=True)]
     sample_url: Annotated[str, Field(validation_alias="sample", exclude=True)]
-    description: Annotated[str, AfterValidator(description_validator)]
-    access: Annotated[str, Field(exclude=True)]
-    category: Annotated[str, Field(exclude=True)]
-
-    @computed_field
-    @property
-    def image_file_name(self) -> str:
-        value = self.image_url.split("/")[-1]
-        return f"'{value}'"
-
-    @computed_field
-    @property
-    def audio_file_name(self) -> str:
-        url = self.audio_file_url.split("?")[0]
-        value = url.split("/")[-1]
-        return f"'{value}'"
-
-    @computed_field
-    @property
-    def sample_file_name(self) -> str:
-        value = self.sample_url.split("/")[-1]
-        return f"'{value}'"
-
-    @computed_field
-    @property
-    def access_id(self) -> str:
-        if self.access == "p":
-            return "'premium'"
-        if self.access == "a":
-            return "'all'"
-        if self.access == "r":
-            return "'regular'"
-        return "'all'"
+    description: Description
+    image_file_name: FileName = Field(validation_alias="image")
+    audio_file_name: FileName = Field(validation_alias="signed_url")
+    sample_file_name: FileName = Field(validation_alias="sample")
+    access_id: AccessId = Field(validation_alias="access")
 
     def download_sample(self):
         response = requests.get(self.sample_url)
