@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from pydantic import BaseModel, Field
 import requests
 import os
@@ -19,6 +19,7 @@ class Track(BaseModel):
     audio_file_name: FileName = Field(validation_alias="signed_url")
     sample_file_name: FileName = Field(validation_alias="sample")
     access_id: AccessId = Field(validation_alias="access")
+    tags: Annotated[List[str], Field(validation_alias="track_purposes", exclude=True)]
 
     def download_sample(self):
         response = requests.get(self.sample_url)
@@ -43,3 +44,12 @@ class Track(BaseModel):
             os.path.join(settings.images_directory, self.image_file_name), "wb"
         ) as file:
             file.write(response.content)
+
+
+class Tag(BaseModel):
+    name: Name
+
+
+class TrackTagAssociation(BaseModel):
+    track_name: str
+    tag_name: str
