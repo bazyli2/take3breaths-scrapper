@@ -1,37 +1,39 @@
 from typing import Annotated
 
-from pydantic import AfterValidator
+from pydantic import AfterValidator, PlainSerializer
 
 from take3breaths_scrapper.validators import (
     access_prefix_to_id,
     get_last_url_segment,
     remove_new_lines,
     remove_query_string,
+    replace_empty_with_none,
     replace_single_quotes,
-    wrap_in_quotes,
+    sql_serializer,
 )
 
+SQLString = Annotated[str, PlainSerializer(sql_serializer)]
 
 Name = Annotated[
-    str,
-    AfterValidator(wrap_in_quotes),
+    SQLString,
+    AfterValidator(replace_empty_with_none),
 ]
 
 Description = Annotated[
-    str,
+    SQLString,
     AfterValidator(remove_new_lines),
     AfterValidator(replace_single_quotes),
-    AfterValidator(wrap_in_quotes),
+    AfterValidator(replace_empty_with_none),
 ]
 
 
 AccessId = Annotated[
-    str, AfterValidator(access_prefix_to_id), AfterValidator(wrap_in_quotes)
+    SQLString,
+    AfterValidator(access_prefix_to_id),
 ]
 
 FileName = Annotated[
-    str,
+    SQLString,
     AfterValidator(remove_query_string),
     AfterValidator(get_last_url_segment),
-    AfterValidator(wrap_in_quotes),
 ]

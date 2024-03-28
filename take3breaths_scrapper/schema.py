@@ -4,7 +4,7 @@ import requests
 import os
 
 from take3breaths_scrapper.settings import get_settings
-from take3breaths_scrapper.types import AccessId, Description, FileName, Name
+from take3breaths_scrapper.types import AccessId, Description, FileName, Name, SQLString
 
 settings = get_settings()
 
@@ -51,5 +51,5 @@ class Tag(BaseModel):
 
 
 class TrackTagAssociation(BaseModel):
-    track_name: str
-    tag_name: str
+    track_name: SQLString
+    tag_name: SQLString

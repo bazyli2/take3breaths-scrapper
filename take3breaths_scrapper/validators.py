@@ -5,8 +5,8 @@ def replace_empty_with_none(v: str):
     return None if v == "" else v
 
 
-def wrap_in_quotes(v: str):
-    return "NULL" if v == "" else f"'{v}'"
+def sql_serializer(v: str | None):
+    return "NULL" if v is None else f"'{v}'"
 
 
 def replace_single_quotes(v: str):
